@@ -1,0 +1,12 @@
+logging:
+  level: INFO
+  loggers:
+    io.snice.rests: DEBUG
+
+hektor:
+  dispatchers:
+    my-dispatcher:
+      executor: worker-thread-executor
+      throughput: 75
+      workerThreadExecutor:
+        noOfWorkers: 4

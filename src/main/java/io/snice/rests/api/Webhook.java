@@ -1,9 +1,6 @@
 package io.snice.rests.api;
 
-import io.snice.buffer.Buffer;
 import io.snice.buffer.Buffers;
-
-import java.util.UUID;
 
 /**
  * @param request the original {@link WebhookRequest} that created this {@link Webhook}

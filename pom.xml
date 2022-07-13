@@ -20,7 +20,6 @@
         <mainClass>io.snice.rests.SniceRestsApplication</mainClass>
         <hamcrest.version>2.2</hamcrest.version>
         <io.snice.commons.version>0.1.10-SNAPSHOT</io.snice.commons.version>
-        <hektor.version>0.0.5-SNAPSHOT</hektor.version>
     </properties>
 
     <dependencyManagement>
@@ -45,38 +44,6 @@
                 <groupId>io.snice</groupId>
                 <artifactId>snice-buffers</artifactId>
                 <version>${io.snice.commons.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.hektor</groupId>
-                <artifactId>hektor-core</artifactId>
-                <version>${hektor.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.hektor</groupId>
-                <artifactId>hektor-actors</artifactId>
-                <version>${hektor.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.hektor</groupId>
-                <artifactId>hektor-fsm</artifactId>
-                <version>${hektor.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.hektor</groupId>
-                <artifactId>hektor-actor-fsm</artifactId>
-                <version>${hektor.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -125,26 +92,6 @@
             <artifactId>snice-buffers</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.hektor</groupId>
-            <artifactId>hektor-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.hektor</groupId>
-            <artifactId>hektor-actors</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.hektor</groupId>
-            <artifactId>hektor-fsm</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.hektor</groupId>
-            <artifactId>hektor-actor-fsm</artifactId>
-        </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -155,6 +102,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -172,6 +120,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

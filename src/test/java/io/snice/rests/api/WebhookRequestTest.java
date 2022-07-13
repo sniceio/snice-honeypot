@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.net.URI;
 import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +34,7 @@ class WebhookRequestTest {
     }
 
     private static WebhookRequest create(String method) throws Exception {
-        return new WebhookRequest(new URL("http://apa.com"), null);
+        return new WebhookRequest(new URI("http://apa.com"), null);
     }
 
 }

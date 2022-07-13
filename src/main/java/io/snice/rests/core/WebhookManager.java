@@ -1,46 +1,47 @@
 package io.snice.rests.core;
 
-import io.hektor.actors.fsm.FsmActor;
-import io.hektor.actors.fsm.OnStartFunction;
-import io.hektor.core.Hektor;
-import io.hektor.core.Props;
 import io.snice.functional.Either;
 import io.snice.rests.api.ErrorResult;
 import io.snice.rests.api.Webhook;
 import io.snice.rests.api.WebhookRequest;
-import io.snice.rests.fsm.WebhookData;
-import io.snice.rests.fsm.WebhookFsm;
-import io.snice.rests.fsm.WebhookFsmContext;
-import io.snice.rests.fsm.WebhookFsmMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static io.snice.preconditions.PreConditions.assertNotNull;
 
 public class WebhookManager {
 
+    private final ScheduledExecutorService scheduler;
+    private final HttpClient httpClient;
+
     private static final Logger logger = LoggerFactory.getLogger(WebhookManager.class);
 
-    private static final WebhookFsmMessages.Start START_MSG = new WebhookFsmMessages.Start();
-
-    private final Hektor hektor;
-
-    public static WebhookManager of(final Hektor hektor) {
-        assertNotNull(hektor);
-        return new WebhookManager(hektor);
+    public static WebhookManager of(ScheduledExecutorService scheduler, HttpClient httpClient) {
+        assertNotNull(scheduler);
+        assertNotNull(httpClient);
+        return new WebhookManager(scheduler, httpClient);
     }
 
-    private WebhookManager(final Hektor hektor) {
-        this.hektor = hektor;
+    private WebhookManager(final ScheduledExecutorService executorService, final HttpClient httpClient) {
+        this.scheduler = executorService;
+        this.httpClient = httpClient;
     }
 
     public Either<ErrorResult, Webhook> processWebhookRequest(final WebhookRequest request) {
         try {
             final var webhook = new Webhook(request);
-            final var props = configureWebhookFsm(webhook);
-            hektor.actorOf(webhook.sri(), props);
+            final var job = new WebhookJob(1, webhook, httpClient, scheduler);
+            webhook.request().initialDelay()
+                    .ifPresentOrElse(delay -> scheduler.schedule(job, delay.getSeconds(), TimeUnit.SECONDS),
+                            () -> scheduler.execute(job));
+
             return Either.right(webhook);
         } catch (final Throwable t) {
             final var cause = t.getCause() != null ? t.getCause() : t;
@@ -50,17 +51,41 @@ public class WebhookManager {
         }
     }
 
-    private static Props configureWebhookFsm(final Webhook webhook) {
+    private static record WebhookJob(int currentExecution, Webhook webhook, HttpClient client, ScheduledExecutorService scheduler) implements Runnable{
 
-        final OnStartFunction<WebhookFsmContext, WebhookData> onStart = (actorCtx, ctx, data) -> {
-            actorCtx.self().tell(START_MSG);
-        };
+        @Override
+        public void run() {
+            if (currentExecution < webhook.request().count()) {
+                final var job = new WebhookJob(currentExecution + 1, webhook, client, scheduler);
+                scheduler.schedule(job, webhook.request().subsequentDelay().getSeconds(), TimeUnit.SECONDS);
+            }
 
-        return FsmActor.of(WebhookFsm.definition)
-                .withContext(ref -> new WebhookFsmContext())
-                .withData(() -> WebhookData.of(webhook))
-                .withStartFunction(onStart)
-                .build();
+            try {
+                final var req = buildRequest();
+                final var future = client.sendAsync(req, HttpResponse.BodyHandlers.ofByteArray());
+                future.thenAccept(WebhookJob::processResponse);
+                future.exceptionally(WebhookJob::processError);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+
+        private static HttpResponse<byte[]> processError(Throwable t) {
+            // Currently, we don't care about the error, although we may care about
+            // unresolvable addresses, connection timeouts and whatnot...
+            return null;
+        }
+
+        private static void processResponse(HttpResponse<byte[]> response) {
+            // Currently, don't care about the response
+        }
+
+        private HttpRequest buildRequest() {
+            final var builder = HttpRequest.newBuilder(webhook.request().uri())
+                    .method(webhook.request().method(), HttpRequest.BodyPublishers.noBody());
+
+            return builder.build();
+        }
 
     }
 }

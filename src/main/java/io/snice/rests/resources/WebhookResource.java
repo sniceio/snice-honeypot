@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Optional;
@@ -40,13 +41,14 @@ public class WebhookResource {
     }
 
     @POST
-    public Response installWebhook(@FormParam("url") @NotNull URL url,
+    public Response installWebhook(@FormParam("uri") @NotNull URI uri,
                                    @FormParam("method") @DefaultValue("POST") String method,
                                    @FormParam("count") @DefaultValue("1") int count,
-                                   @FormParam("initialDelay") @DefaultValue("1") int initialDelay,
+                                   @FormParam("initialDelay") Optional<Integer> initialDelay,
                                    @FormParam("subsequentDelay") @DefaultValue("1") int subsequentDelay
                                    ) {
-        final var webhookRequest = new WebhookRequest(url, method, count, Duration.ofSeconds(initialDelay), Duration.ofSeconds(subsequentDelay));
+        final var initialDelayMaybe = initialDelay.map(Duration::ofSeconds);
+        final var webhookRequest = new WebhookRequest(uri, method, count, initialDelayMaybe, Duration.ofSeconds(subsequentDelay));
         final var processed = manager.processWebhookRequest(webhookRequest);
         return processed.fold(error -> Response.status(error.code()).entity(error).build(),
                 webhook -> Response.ok().entity(webhook).build());

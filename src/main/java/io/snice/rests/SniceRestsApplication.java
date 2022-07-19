@@ -3,12 +3,15 @@ package io.snice.rests;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.snice.docker.DockerSupport;
 import io.snice.rests.core.WebhookManager;
 import io.snice.rests.health.DummyHealthCheck;
 import io.snice.rests.resources.ErrorResource;
 import io.snice.rests.resources.HappyResource;
 import io.snice.rests.resources.WebhookResource;
 import io.snice.util.concurrent.SniceThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -19,8 +22,12 @@ import java.util.concurrent.Executors;
  */
 public class SniceRestsApplication extends Application<SniceRestsConfiguration> {
 
-    public static void main(final String[] args) throws Exception {
-        new SniceRestsApplication().run(args);
+    private static final Logger logger = LoggerFactory.getLogger(SniceRestsApplication.class);
+
+    private final DockerSupport dockerSupport;
+
+    private SniceRestsApplication(final DockerSupport dockerSupport) {
+        this.dockerSupport = dockerSupport;
     }
 
     @Override
@@ -51,6 +58,13 @@ public class SniceRestsApplication extends Application<SniceRestsConfiguration> 
         environment.jersey().register(new ErrorResource());
 
         environment.healthChecks().register("dummy", new DummyHealthCheck());
+    }
+
+
+    public static void main(final String[] args) throws Exception {
+        final var dockerSupport = DockerSupport.of().withReadFromSystemProperties().build();
+        logger.info(dockerSupport.toString());
+        new SniceRestsApplication(dockerSupport).run(args);
     }
 
 }

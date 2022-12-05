@@ -37,6 +37,6 @@ public class HappyResource {
     }
 
     private static String randomHappyMessage() {
-        return "What a wonderful day";
+        return "What a wonderful day it is today";
     }
 }

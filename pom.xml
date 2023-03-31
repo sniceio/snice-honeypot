@@ -5,7 +5,7 @@
 
     <groupId>io.snice.rests</groupId>
     <artifactId>rest-service</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>SniceRests</name>
@@ -14,7 +14,7 @@
         <connection>scm:git:git@github.com:sniceio/snice-honeypot.git</connection>
         <developerConnection>scm:git:https://github.com/sniceio/snice-honeypot.git</developerConnection>
         <url>https://github.com:sniceio/snice-honeypot</url>
-        <tag>snice-honeypot-release-0.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

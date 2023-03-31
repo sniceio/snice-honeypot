@@ -19,8 +19,8 @@
         <dropwizard.version>2.1.1</dropwizard.version>
         <mainClass>io.snice.rests.SniceRestsApplication</mainClass>
         <hamcrest.version>2.2</hamcrest.version>
-        <io.snice.commons.version>0.1.10-SNAPSHOT</io.snice.commons.version>
-        <io.snice.networking.version>0.0.10-SNAPSHOT</io.snice.networking.version>
+        <io.snice.commons.version>0.1.11</io.snice.commons.version>
+        <io.snice.networking.version>0.0.10</io.snice.networking.version>
     </properties>
 
     <dependencyManagement>

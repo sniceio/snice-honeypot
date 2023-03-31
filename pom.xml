@@ -7,8 +7,24 @@
     <artifactId>rest-service</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <description>Snice Honeypot - Simple Service for testing various types of protocols</description>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-    <name>SniceRests</name>
+    <developers>
+        <developer>
+            <name>Jonas Borjesson</name>
+            <email>jonas@jonasborjesson.com</email>
+            <timezone>-8</timezone>
+        </developer>
+    </developers>
+
+    <name>SniceHoneypot</name>
 
     <scm>
         <connection>scm:git:git@github.com:sniceio/snice-honeypot.git</connection>
@@ -26,6 +42,19 @@
         <io.snice.commons.version>0.1.11</io.snice.commons.version>
         <io.snice.networking.version>0.0.10</io.snice.networking.version>
     </properties>
+
+    <distributionManagement>
+      <repository>
+        <id>ossrh</id>
+        <name>Nexus Release Repository</name>
+        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      </repository>
+      <snapshotRepository>
+        <id>ossrh</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      </snapshotRepository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
